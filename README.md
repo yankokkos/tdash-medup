@@ -7,21 +7,15 @@ Sistema completo para gerenciamento de dados operacionais com frontend React e b
 ### Opção 1: Coolify (Recomendado)
 
 1. Faça push para Git
-2. Conecte no Coolify
-3. Configure variáveis de ambiente
+2. Conecte no Coolify apontando para este repositório
+3. Configure a variável de ambiente `DATABASE_URL`
 4. Deploy automático!
-
-Veja: [COOLIFY_DEPLOY.md](./COOLIFY_DEPLOY.md)
 
 ### Opção 2: Docker Compose
 
 ```bash
 docker-compose -f docker-compose.prod.yml up -d --build
 ```
-
-### Opção 3: Deploy Manual
-
-Veja: [GUIA_DEPLOY.md](./GUIA_DEPLOY.md)
 
 ## 📋 Estrutura
 
@@ -40,12 +34,13 @@ medup-tdash/
 - **Database**: MySQL
 - **Container**: Docker
 
-## 📚 Documentação
+## 📚 Configuração
 
-- [Deploy no Coolify](./COOLIFY_DEPLOY.md)
-- [Deploy com Docker](./DOCKER_DEPLOY.md)
-- [Deploy Manual](./GUIA_DEPLOY.md)
-- [Setup Rápido](./QUICK_START.md)
+Configure a variável de ambiente `DATABASE_URL` no Coolify ou no arquivo `.env` do backend:
+
+```env
+DATABASE_URL=mysql://usuario:senha@host:3306/banco?schema=public
+```
 
 ## 🎯 Features
 
