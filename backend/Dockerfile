@@ -1,5 +1,6 @@
 # Backend Dockerfile - Multi-stage build
-FROM node:20-alpine AS builder
+# Usar Debian ao invés de Alpine para melhor compatibilidade com Prisma
+FROM node:20-slim AS builder
 
 WORKDIR /app
 
