@@ -11,6 +11,9 @@ class DashboardController {
         where.mesId = parseInt(mesId as string);
       }
 
+      // Construir where para dadosMensais se mesId for fornecido
+      const dadosMensaisWhere = mesId ? { mesId: parseInt(mesId as string) } : {};
+
       const [
         totalClientes,
         clientesAtivos,
@@ -24,13 +27,21 @@ class DashboardController {
         prisma.transmissoesXml.count({
           where: {
             xmlTransmitido: true,
-            dadosMensais: where.mesId ? { mesId: where.mesId } : undefined,
+            dadosMensais: mesId
+              ? {
+                  mesId: parseInt(mesId as string),
+                }
+              : undefined,
           },
         }),
         prisma.transmissoesXml.count({
           where: {
             xmlTransmitido: false,
-            dadosMensais: where.mesId ? { mesId: where.mesId } : undefined,
+            dadosMensais: mesId
+              ? {
+                  mesId: parseInt(mesId as string),
+                }
+              : undefined,
           },
         }),
       ]);
@@ -50,87 +61,60 @@ class DashboardController {
     try {
       const { mesId } = req.query;
 
-      const where: any = {};
+      // Buscar dados mensais com XML não transmitido
+      const dadosMensaisWhere: any = {
+        transmissoesXml: {
+          xmlTransmitido: false,
+        },
+      };
+      
       if (mesId) {
-        where.mesId = parseInt(mesId as string);
+        dadosMensaisWhere.mesId = parseInt(mesId as string);
       }
 
-      // Buscar clientes com XML não transmitido
-      const clientesNaoTransmitidos = await prisma.cliente.findMany({
-        where: {
-          dadosMensais: {
-            some: {
-              ...where,
-              transmissoesXml: {
-                xmlTransmitido: false,
-              },
-            },
-          },
-        },
+      const dadosMensaisNaoTransmitidos = await prisma.dadosMensais.findMany({
+        where: dadosMensaisWhere,
         include: {
-          dadosMensais: {
-            where: where.mesId
-              ? {
-                  mesId: where.mesId,
-                  transmissoesXml: {
-                    xmlTransmitido: false,
-                  },
-                }
-              : {
-                  transmissoesXml: {
-                    xmlTransmitido: false,
-                  },
-                },
-            include: {
-              mes: true,
-              transmissoesXml: true,
-            },
-          },
+          cliente: true,
+          mes: true,
+          transmissoesXml: true,
         },
       });
 
-      // Buscar clientes com honorários pendentes
-      const honorariosPendentes = await prisma.cliente.findMany({
-        where: {
-          dadosMensais: {
-            some: {
-              ...where,
-              honorarios: {
-                OR: [
-                  { statusCobranca: { not: 'Pago' } },
-                  { statusCobranca: null },
-                ],
-              },
-            },
-          },
+      // Buscar clientes com XML não transmitido (agrupados por cliente)
+      const clientesNaoTransmitidos = dadosMensaisNaoTransmitidos.map((dm) => ({
+        ...dm.cliente,
+        dadosMensais: [dm],
+      }));
+
+      // Buscar dados mensais com honorários pendentes
+      const dadosMensaisHonorariosWhere: any = {
+        honorarios: {
+          OR: [
+            { statusCobranca: { not: 'Pago' } },
+            { statusCobranca: null },
+          ],
         },
+      };
+      
+      if (mesId) {
+        dadosMensaisHonorariosWhere.mesId = parseInt(mesId as string);
+      }
+
+      const dadosMensaisHonorariosPendentes = await prisma.dadosMensais.findMany({
+        where: dadosMensaisHonorariosWhere,
         include: {
-          dadosMensais: {
-            where: where.mesId
-              ? {
-                  mesId: where.mesId,
-                  honorarios: {
-                    OR: [
-                      { statusCobranca: { not: 'Pago' } },
-                      { statusCobranca: null },
-                    ],
-                  },
-                }
-              : {
-                  honorarios: {
-                    OR: [
-                      { statusCobranca: { not: 'Pago' } },
-                      { statusCobranca: null },
-                    ],
-                  },
-                },
-            include: {
-              mes: true,
-              honorarios: true,
-            },
-          },
+          cliente: true,
+          mes: true,
+          honorarios: true,
         },
       });
+
+      // Agrupar por cliente
+      const honorariosPendentes = dadosMensaisHonorariosPendentes.map((dm) => ({
+        ...dm.cliente,
+        dadosMensais: [dm],
+      }));
 
       // Formatar pendências
       const pendencias: any[] = [];

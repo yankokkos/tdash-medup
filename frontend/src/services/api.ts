@@ -1,8 +1,24 @@
 import axios from 'axios';
 import type { Cliente, Mes, DadosMensais, PaginatedResponse } from '../types/cliente';
 
+// Usar URL do backend diretamente se estiver em domínio separado
+// Em produção, o backend está em https://tdashapi.medupcontabil.com.br
+// Em desenvolvimento, usar /api (proxy via nginx)
+const getBaseURL = () => {
+  // Se estiver em produção e o backend estiver em domínio separado
+  if (import.meta.env.PROD) {
+    // Verificar se estamos no domínio do frontend
+    const currentHost = window.location.hostname;
+    if (currentHost === 'tdash.medupcontabil.com.br') {
+      return 'https://tdashapi.medupcontabil.com.br/api';
+    }
+  }
+  // Desenvolvimento ou mesmo domínio - usar proxy
+  return '/api';
+};
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
