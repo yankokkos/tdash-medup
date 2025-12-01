@@ -18,7 +18,17 @@ const PORT = parseInt(process.env.PORT || '5000', 10);
 // A conexão com o banco será feita sob demanda nas rotas
 
 // Middlewares
-app.use(cors());
+// Configurar CORS para permitir requisições do frontend
+app.use(cors({
+  origin: [
+    'https://tdash.medupcontabil.com.br',
+    'http://localhost:3000',
+    'http://localhost:5173',
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
