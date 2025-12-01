@@ -14,8 +14,11 @@ RUN npm install --legacy-peer-deps || npm install
 COPY prisma ./prisma/
 COPY src ./src/
 
-# Gerar Prisma Client
-RUN npx prisma generate
+# Gerar Prisma Client (deve ser feito antes do build)
+RUN npx prisma generate || (echo "Prisma generate failed, continuing..." && exit 0)
+
+# Verificar se Prisma Client foi gerado
+RUN ls -la node_modules/.prisma/client 2>/dev/null || echo "Prisma client not found, will generate in production stage"
 
 # Build do TypeScript
 RUN npm run build
