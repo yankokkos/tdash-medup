@@ -25,13 +25,12 @@ RUN ls -la node_modules/.prisma/client 2>/dev/null || echo "Prisma client not fo
 RUN npm run build
 
 # Stage 2 - Produção
-FROM node:20-alpine
+FROM node:20-slim
 
 WORKDIR /app
 
 # Instalar dependências do sistema necessárias para o Prisma
-# No Alpine 3.22+, usar openssl padrão (OpenSSL 3.0) e libc6-compat
-RUN apk add --no-cache openssl libc6-compat
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 # Copiar arquivos de dependências
 COPY package*.json ./
