@@ -1,0 +1,235 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Cliente {
+  id                  Int      @id @default(autoincrement())
+  numero              String?
+  nomeCliente         String   @map("nome_cliente")
+  cnpj                String   @unique @db.VarChar(14)
+  cnpjFormatado       String?  @map("cnpj_formatado")
+  razaoSocial         String?  @map("razao_social")
+  sedeFilial          String?  @map("sede_filial")
+  nomeTratamento      String?  @map("nome_tratamento")
+  municipio           String?
+  qtdSocios           String?  @map("qtd_socios")
+  segmentoMercado     String?  @map("segmento_mercado")
+  tributacao          String?
+  linkGoogleDrive     String?  @map("link_google_drive") @db.Text
+  linkDrivePj         String?  @map("link_drive_pj") @db.Text
+  sistemaMunicipalNfsE String? @map("sistema_municipal_nfs_e") @db.Text
+  loginWebsiss        String?  @map("login_websiss")
+  senhaWebiss         String?  @map("senha_webiss")
+  idClienteExterno    String?  @map("id_cliente_externo")
+  taskClickup1        String?  @map("task_clickup_1")
+  taskClickup2        String?  @map("task_clickup_2")
+  socioCriado         Boolean? @map("socio_criado") @default(false)
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  statusCliente       StatusCliente?
+  dadosMensais        DadosMensais[]
+
+  @@index([cnpj])
+  @@index([nomeCliente])
+  @@index([municipio])
+  @@map("clientes")
+}
+
+model StatusCliente {
+  id                        Int       @id @default(autoincrement())
+  clienteId                 Int       @unique @map("cliente_id")
+  statusCliente             String?   @map("status_cliente")
+  statusEmpresaPj           String?   @map("status_empresa_pj")
+  etapaAbertura             String?   @map("etapa_abertura")
+  statusTdash               String?   @map("status_tdash")
+  statusCertificadoDigital  String?   @map("status_certificado_digital")
+  validadeCertificadoDigital DateTime? @map("validade_certificado_digital") @db.Date
+  cadastrarSittax           String?   @map("cadastrar_sittax")
+  situacaoProcuracaoEcac    String?   @map("situacao_procuracao_ecac")
+  cpfSocioAdm               String?   @map("cpf_socio_adm")
+  codigoSimplesNacional     String?   @map("codigo_simples_nacional")
+  numeroReciboIrpf          String?   @map("numero_recibo_irpf")
+  createdAt                 DateTime  @default(now()) @map("created_at")
+  updatedAt                 DateTime  @updatedAt @map("updated_at")
+
+  cliente                   Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  @@index([clienteId])
+  @@map("status_clientes")
+}
+
+model Mes {
+  id          Int      @id @default(autoincrement())
+  ano         Int
+  mes         Int      // 1-12
+  nome        String   @unique // "novembro_2025"
+  nomeExibicao String  @map("nome_exibicao") // "Novembro 2025"
+  ativo       Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  dadosMensais        DadosMensais[]
+  historicoAlteracoes HistoricoAlteracao[]
+
+  @@unique([ano, mes])
+  @@map("meses")
+}
+
+model DadosMensais {
+  id                    Int       @id @default(autoincrement())
+  clienteId             Int       @map("cliente_id")
+  mesId                 Int       @map("mes_id")
+  faturamentoPrefeitura Decimal?  @map("faturamento_prefeitura") @db.Decimal(15, 2)
+  valorSittax           Decimal?  @map("valor_sittax") @db.Decimal(15, 2)
+  faturamentoIgualSittax String?  @map("faturamento_igual_sittax")
+  tipoTransmissao       String?   @map("tipo_transmissao")
+  transmitidoPor        String?   @map("transmitido_por")
+  statusTransmissao     String?   @map("status_transmissao")
+  obs                   String?   @db.Text
+  demandas              String?   @db.Text
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  cliente               Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  mes                   Mes       @relation(fields: [mesId], references: [id], onDelete: Cascade)
+
+  transmissoesXml       TransmissoesXml?
+  dasRecibos            DasRecibos?
+  sociosDadosMensais    SociosDadosMensais[]
+  honorarios            Honorarios?
+  tarefasAutomacao      TarefasAutomacao?
+
+  @@unique([clienteId, mesId])
+  @@index([clienteId])
+  @@index([mesId])
+  @@map("dados_mensais")
+}
+
+model TransmissoesXml {
+  id                      Int          @id @default(autoincrement())
+  dadosMensaisId          Int          @unique @map("dados_mensais_id")
+  nomeArquivoXml          String?      @map("nome_arquivo_xml")
+  xmlTransmitido          Boolean?     @map("xml_transmitido") @default(false)
+  issRetido               String?
+  naoTeveNota             Boolean?     @map("nao_teve_nota") @default(false)
+  transmitidoOutubro      Boolean?     @map("transmitido_outubro") @default(false)
+  transmitidoNovembro     Boolean?     @map("transmitido_novembro") @default(false)
+  deveFazerEcac           Boolean?     @map("deve_fazer_ecac") @default(false)
+  feitoEcac               Boolean?     @map("feito_ecac") @default(false)
+  declaracaoEnviadaSittax Boolean?     @map("declaracao_enviada_sittax") @default(false)
+  viaSittax               Boolean?     @map("via_sittax") @default(false)
+  downloadDasRecibo       Boolean?     @map("download_das_recibo") @default(false)
+  transmitidoPeloSittax   Boolean?     @map("transmitido_pelo_sittax") @default(false)
+  createdAt               DateTime     @default(now()) @map("created_at")
+  updatedAt               DateTime     @updatedAt @map("updated_at")
+
+  dadosMensais            DadosMensais @relation(fields: [dadosMensaisId], references: [id], onDelete: Cascade)
+
+  @@index([dadosMensaisId])
+  @@map("transmissoes_xml")
+}
+
+model DasRecibos {
+  id                      Int          @id @default(autoincrement())
+  dadosMensaisId          Int          @unique @map("dados_mensais_id")
+  nomeArquivoDas          String?      @map("nome_arquivo_das")
+  faturamentoPrefeitura   Decimal?     @map("faturamento_prefeitura") @db.Decimal(15, 2)
+  valorDas                Decimal?     @map("valor_das") @db.Decimal(15, 2)
+  percentualImposto       Decimal?     @map("percentual_imposto") @db.Decimal(5, 2)
+  dasBaixado               String?      @map("das_baixado")
+  tipoArquivo             String?      @map("tipo_arquivo") // 'DAS' ou 'Recibo'
+  planejamentoTributario   String?      @map("planejamento_tributario")
+  planejMensalTrib         Boolean?     @map("planej_mensal_trib") @default(false)
+  downloadDas              Boolean?     @map("download_das") @default(false)
+  createdAt               DateTime     @default(now()) @map("created_at")
+  updatedAt               DateTime     @updatedAt @map("updated_at")
+
+  dadosMensais            DadosMensais @relation(fields: [dadosMensaisId], references: [id], onDelete: Cascade)
+
+  @@index([dadosMensaisId])
+  @@map("das_recibos")
+}
+
+model SociosDadosMensais {
+  id            Int          @id @default(autoincrement())
+  dadosMensaisId Int         @map("dados_mensais_id")
+  numeroSocio   Int          @map("numero_socio") // 1, 2 ou 3
+  nomeSocio     String?      @map("nome_socio")
+  valorDasSocio Decimal?     @map("valor_das_socio") @db.Decimal(15, 2)
+  liquidoSocio  Decimal?     @map("liquido_socio") @db.Decimal(15, 2)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  dadosMensais  DadosMensais @relation(fields: [dadosMensaisId], references: [id], onDelete: Cascade)
+
+  @@unique([dadosMensaisId, numeroSocio])
+  @@index([dadosMensaisId])
+  @@map("socios_dados_mensais")
+}
+
+model Honorarios {
+  id                  Int          @id @default(autoincrement())
+  dadosMensaisId      Int          @unique @map("dados_mensais_id")
+  nomeHonorarios      String?      @map("nome_honorarios")
+  valorHonorarios     Decimal?     @map("valor_honorarios") @db.Decimal(15, 2)
+  bancoCobranca       String?      @map("banco_cobranca")
+  boletoEmitidoSalvo  Boolean?     @map("boleto_emitido_salvo") @default(false)
+  statusCobranca      String?      @map("status_cobranca")
+  logicaHonorarios    String?      @map("logica_honorarios") @db.Text
+  statusBanco         String?      @map("status_banco")
+  honorariosEmitido   String?      @map("honorarios_emitido")
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
+
+  dadosMensais        DadosMensais @relation(fields: [dadosMensaisId], references: [id], onDelete: Cascade)
+
+  @@index([dadosMensaisId])
+  @@map("honorarios")
+}
+
+model TarefasAutomacao {
+  id                  Int          @id @default(autoincrement())
+  dadosMensaisId      Int          @unique @map("dados_mensais_id")
+  executarAutomacao   Boolean?     @map("executar_automacao") @default(false)
+  liberadoCriarTexto  Boolean?     @map("liberado_criar_texto") @default(false)
+  textoFeito          Boolean?     @map("texto_feito") @default(false)
+  dasNaPasta          Boolean?     @map("das_na_pasta") @default(false)
+  tdashsEnviados      Boolean?     @map("tdashs_enviados") @default(false)
+  emitirRecibo        Boolean?     @map("emitir_recibo") @default(false)
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
+
+  dadosMensais        DadosMensais @relation(fields: [dadosMensaisId], references: [id], onDelete: Cascade)
+
+  @@index([dadosMensaisId])
+  @@map("tarefas_automacao")
+}
+
+model HistoricoAlteracao {
+  id            Int      @id @default(autoincrement())
+  tabelaOrigem  String   @map("tabela_origem")
+  registroId    Int      @map("registro_id")
+  campoAlterado String   @map("campo_alterado")
+  valorAnterior String?  @map("valor_anterior") @db.Text
+  valorNovo     String?  @map("valor_novo") @db.Text
+  usuario       String?
+  mesId         Int?     @map("mes_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  mes           Mes?     @relation(fields: [mesId], references: [id], onDelete: SetNull)
+
+  @@index([tabelaOrigem])
+  @@index([registroId])
+  @@index([mesId])
+  @@index([createdAt])
+  @@map("historico_alteracoes")
+}
+

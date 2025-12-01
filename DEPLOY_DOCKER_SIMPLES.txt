@@ -1,0 +1,39 @@
+═══════════════════════════════════════════════════════════════
+  DEPLOY COM DOCKER - TDash MedUp
+═══════════════════════════════════════════════════════════════
+
+📦 O QUE FAZER:
+
+1. Criar arquivo .env na raiz do projeto:
+   
+   DATABASE_URL="mysql://u264518018_TDash:Medup1302@@193.203.175.238:3306/u264518018_TDash?schema=public"
+   FRONTEND_PORT=80
+
+2. Fazer upload de TODA a pasta medup-tdash/ para hospedagem
+
+3. Via SSH, executar:
+   
+   cd /caminho/para/medup-tdash
+   docker-compose -f docker-compose.prod.yml up -d --build
+
+═══════════════════════════════════════════════════════════════
+
+✅ PRONTO!
+
+Acesse: http://seu-dominio.com
+
+═══════════════════════════════════════════════════════════════
+
+🔧 COMANDOS ÚTEIS:
+
+Ver logs:
+docker-compose -f docker-compose.prod.yml logs -f
+
+Parar:
+docker-compose -f docker-compose.prod.yml down
+
+Reiniciar:
+docker-compose -f docker-compose.prod.yml restart
+
+═══════════════════════════════════════════════════════════════
+

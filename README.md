@@ -1,0 +1,84 @@
+# TDash MedUp - Sistema de Gerenciamento de Dados Operacionais
+
+Sistema completo para gerenciamento de dados operacionais com frontend React e backend Node.js.
+
+## 🚀 Deploy Rápido
+
+### Opção 1: Coolify (Recomendado)
+
+1. Faça push para Git
+2. Conecte no Coolify
+3. Configure variáveis de ambiente
+4. Deploy automático!
+
+Veja: [COOLIFY_DEPLOY.md](./COOLIFY_DEPLOY.md)
+
+### Opção 2: Docker Compose
+
+```bash
+docker-compose -f docker-compose.prod.yml up -d --build
+```
+
+### Opção 3: Deploy Manual
+
+Veja: [GUIA_DEPLOY.md](./GUIA_DEPLOY.md)
+
+## 📋 Estrutura
+
+```
+medup-tdash/
+├── backend/          # API Node.js + Express + Prisma
+├── frontend/         # React + TypeScript + Vite
+├── docker-compose.yml
+└── docker-compose.prod.yml
+```
+
+## 🔧 Tecnologias
+
+- **Frontend**: React 18, TypeScript, Vite, Material-UI
+- **Backend**: Node.js, Express, TypeScript, Prisma
+- **Database**: MySQL
+- **Container**: Docker
+
+## 📚 Documentação
+
+- [Deploy no Coolify](./COOLIFY_DEPLOY.md)
+- [Deploy com Docker](./DOCKER_DEPLOY.md)
+- [Deploy Manual](./GUIA_DEPLOY.md)
+- [Setup Rápido](./QUICK_START.md)
+
+## 🎯 Features
+
+- ✅ Dashboard com estatísticas
+- ✅ Lista de clientes com filtros avançados
+- ✅ Edição de dados mensais
+- ✅ Lista de pendências
+- ✅ Comparação entre meses
+- ✅ Importação de dados JSON/CSV
+
+## 📝 Variáveis de Ambiente
+
+```env
+DATABASE_URL=mysql://usuario:senha@host:3306/banco?schema=public
+NODE_ENV=production
+PORT=5000
+FRONTEND_PORT=80
+```
+
+## 🔄 Desenvolvimento
+
+```bash
+# Instalar dependências
+npm run install:all
+
+# Desenvolvimento
+npm run dev
+
+# Build
+cd backend && npm run build
+cd frontend && npm run build
+```
+
+## 📄 Licença
+
+ISC

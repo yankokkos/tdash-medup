@@ -1,0 +1,46 @@
+# Arquivos ignorados pelo Coolify durante o build
+
+# Dependências locais
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs (serão gerados no container)
+dist/
+build/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Git
+.git/
+.gitignore
+
+# Documentação (opcional - pode remover se quiser)
+*.md
+!README.md
+
+# Arquivos de desenvolvimento
+.env.local
+.env.development
+.env.test
+
+# Arquivos de dados de exemplo
+*.json
+!package.json
+!package-lock.json
+

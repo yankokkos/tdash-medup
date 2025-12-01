@@ -1,0 +1,21 @@
+name: Coolify Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Notify Coolify
+        run: |
+          echo "Coolify will automatically detect this push and deploy"
+          echo "Make sure your Coolify is connected to this repository"
+

@@ -1,0 +1,53 @@
+═══════════════════════════════════════════════════════════════
+  COMO FAZER UPLOAD NA HOSPEDAGEM - TDash MedUp
+═══════════════════════════════════════════════════════════════
+
+📦 O QUE COLOCAR NA PASTA public_html:
+
+1. Abra a pasta: medup-tdash/frontend/dist/
+
+2. Copie TODOS os arquivos dessa pasta para public_html:
+   ✅ index.html
+   ✅ Pasta assets/ (completa)
+   ✅ .htaccess
+
+═══════════════════════════════════════════════════════════════
+
+📋 PASSO A PASSO:
+
+1. No File Manager da sua hospedagem, vá até public_html
+
+2. Faça upload de TODOS os arquivos de:
+   medup-tdash/frontend/dist/
+
+3. Certifique-se de que o arquivo .htaccess foi enviado
+
+4. Pronto! Acesse seu domínio
+
+═══════════════════════════════════════════════════════════════
+
+⚠️ IMPORTANTE:
+
+- O backend precisa estar rodando em algum lugar
+- Se sua hospedagem suporta Node.js, coloque o backend em uma
+  pasta "api" no mesmo nível de public_html
+- Se não suporta, você precisa de outro servidor para o backend
+
+═══════════════════════════════════════════════════════════════
+
+🔧 BACKEND (se sua hospedagem suporta Node.js):
+
+Crie pasta "api" e coloque:
+- backend/dist/
+- backend/prisma/
+- backend/package.json
+- backend/.env (com suas credenciais)
+
+Depois execute:
+cd api
+npm install --production
+npx prisma generate
+pm2 start dist/index.js --name tdash-api
+
+═══════════════════════════════════════════════════════════════
+
