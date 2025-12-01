@@ -29,23 +29,15 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Instalar apenas dependências de produção
+# Instalar apenas dependências de produção (inclui @prisma/client)
 RUN npm install --only=production --legacy-peer-deps || npm install --only=production
 
-# Instalar Prisma CLI temporariamente para gerar o client
-RUN npm install prisma@latest --save-dev --legacy-peer-deps || npm install prisma@latest --save-dev
-
-# Gerar Prisma Client
-RUN npx prisma generate
-
-# Remover Prisma CLI (não é necessário em runtime, apenas @prisma/client)
-RUN npm uninstall prisma || true
+# Copiar Prisma Client gerado do builder (mais eficiente que gerar novamente)
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Copiar código compilado do stage anterior
 COPY --from=builder /app/dist ./dist
-
-# Garantir que @prisma/client está instalado
-RUN npm install @prisma/client@latest --save --legacy-peer-deps || npm install @prisma/client@latest --save
 
 # Expor porta
 EXPOSE 5000
@@ -56,4 +48,3 @@ ENV PORT=5000
 
 # Comando para iniciar
 CMD ["node", "dist/index.js"]
-
