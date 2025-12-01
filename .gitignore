@@ -16,6 +16,19 @@ dist/
 build/
 *.tsbuildinfo
 
+# Backend build
+backend/dist/
+
+# Frontend build
+frontend/dist/
+
+# Arquivos JSON grandes (dados já importados)
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!tsconfig.node.json
+
 # IDE
 .vscode/
 .idea/
