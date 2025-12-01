@@ -30,8 +30,10 @@ services:
       dockerfile: Dockerfile
     container_name: tdash-frontend
     restart: unless-stopped
-    ports:
-      - "${FRONTEND_PORT:-80}:80"
+    # Coolify gerencia as portas automaticamente via proxy reverso
+    # Não mapear porta aqui - deixar o Coolify fazer o roteamento
+    expose:
+      - "80"
     depends_on:
       backend:
         condition: service_started
