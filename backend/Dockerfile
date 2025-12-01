@@ -8,7 +8,7 @@ COPY package*.json ./
 COPY tsconfig.json ./
 
 # Instalar todas as dependências (incluindo devDependencies para build)
-RUN npm ci
+RUN npm install --legacy-peer-deps || npm install
 
 # Copiar código fonte e Prisma
 COPY prisma ./prisma/
@@ -30,7 +30,7 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Instalar apenas dependências de produção
-RUN npm ci --only=production
+RUN npm install --only=production --legacy-peer-deps || npm install --only=production
 
 # Gerar Prisma Client
 RUN npx prisma generate
