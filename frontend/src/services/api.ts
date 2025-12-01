@@ -5,10 +5,10 @@ import type { Cliente, Mes, DadosMensais, PaginatedResponse } from '../types/cli
 // Em produção, o backend está em https://tdashapi.medupcontabil.com.br
 // Em desenvolvimento, usar /api (proxy via nginx)
 const getBaseURL = () => {
-  // Se estiver em produção e o backend estiver em domínio separado
-  if (import.meta.env.PROD) {
-    // Verificar se estamos no domínio do frontend
+  // Verificar se estamos no domínio de produção do frontend
+  if (typeof window !== 'undefined') {
     const currentHost = window.location.hostname;
+    // Se estiver em produção (tdash.medupcontabil.com.br), usar backend em domínio separado
     if (currentHost === 'tdash.medupcontabil.com.br') {
       return 'https://tdashapi.medupcontabil.com.br/api';
     }
