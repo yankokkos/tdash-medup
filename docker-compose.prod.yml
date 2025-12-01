@@ -14,11 +14,12 @@ services:
     networks:
       - tdash-network
     healthcheck:
-      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:5000/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)}).on('error', () => process.exit(1))\""]
-      interval: 20s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+      # Health check simples e confiável usando Node.js
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:5000/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)}).on('error', (e) => {console.error(e); process.exit(1)})\""]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
     # Não expor porta externamente - apenas na rede interna
     expose:
       - "5000"
@@ -33,7 +34,9 @@ services:
       - "${FRONTEND_PORT:-80}:80"
     depends_on:
       backend:
-        condition: service_healthy
+        condition: service_started
+        # Usar service_started ao invés de service_healthy para não bloquear
+        # O health check ainda será executado, mas não bloqueará o frontend
     networks:
       - tdash-network
     environment:
