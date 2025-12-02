@@ -79,6 +79,9 @@ export const importApi = {
   importCsv: (filePath: string) =>
     api.post('/import/csv', { filePath }),
 
+  importGoogleSheets: (googleSheetsUrl: string, mesNome?: string) =>
+    api.post('/import/google-sheets', { googleSheetsUrl, mesNome }),
+
   getStatus: (jobId: string) =>
     api.get(`/import/status/${jobId}`),
 };

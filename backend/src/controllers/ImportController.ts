@@ -48,6 +48,31 @@ class ImportController {
     }
   }
 
+  async importGoogleSheets(req: Request, res: Response) {
+    try {
+      const { googleSheetsUrl, mesNome } = req.body;
+
+      if (!googleSheetsUrl) {
+        return res.status(400).json({ error: 'URL do Google Sheets é obrigatória' });
+      }
+
+      // Validar formato básico da URL
+      if (!googleSheetsUrl.includes('docs.google.com/spreadsheets')) {
+        return res.status(400).json({ error: 'URL inválida. Deve ser um link do Google Sheets' });
+      }
+
+      const result = await this.importService.importGoogleSheets(googleSheetsUrl, mesNome);
+
+      res.json({
+        message: 'Importação do Google Sheets iniciada',
+        jobId: result.jobId,
+        status: 'processing',
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
   async getStatus(req: Request, res: Response) {
     try {
       const { jobId } = req.params;

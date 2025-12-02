@@ -1,9 +1,25 @@
 import { useQuery } from '@tanstack/react-query';
-import { Container, Typography, Grid, Paper, List, ListItem, ListItemText, Box, Chip } from '@mui/material';
+import {
+  Container,
+  Typography,
+  Grid,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Box,
+  Chip,
+  Button,
+} from '@mui/material';
+import { CloudUpload } from '@mui/icons-material';
+import { useState } from 'react';
 import { dashboardApi } from '../services/api';
 import { Link } from 'react-router-dom';
+import ImportDialog from '../components/ImportDialog/ImportDialog';
 
 function Dashboard() {
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+
   const { data: estatisticas, isLoading } = useQuery({
     queryKey: ['dashboard', 'estatisticas'],
     queryFn: () => dashboardApi.getEstatisticas().then(res => res.data),
@@ -20,9 +36,18 @@ function Dashboard() {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Dashboard - TDash MedUp
-      </Typography>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Typography variant="h4" component="h1">
+          Dashboard - TDash MedUp
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<CloudUpload />}
+          onClick={() => setImportDialogOpen(true)}
+        >
+          Importar Planilha
+        </Button>
+      </Box>
 
       <Grid container spacing={3} sx={{ mt: 2 }}>
         <Grid item xs={12} sm={6} md={3}>
@@ -77,13 +102,13 @@ function Dashboard() {
                   >
                     <ListItemText
                       primary={pendencia.nomeCliente}
+                      secondaryTypographyProps={{ component: 'div' }}
                       secondary={
-                        <Box sx={{ mt: 1 }}>
+                        <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
                           <Chip
                             label={pendencia.tipoPendencia}
                             size="small"
                             color="warning"
-                            sx={{ mr: 1 }}
                           />
                           {pendencia.descricao && (
                             <Typography variant="body2" color="text.secondary" component="span">
@@ -104,6 +129,8 @@ function Dashboard() {
           </Paper>
         </Grid>
       </Grid>
+
+      <ImportDialog open={importDialogOpen} onClose={() => setImportDialogOpen(false)} />
     </Container>
   );
 }
